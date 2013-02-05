@@ -1,0 +1,9 @@
+Our code depends on the following python libraries:
+numpy
+pylab (matplotlib)
+Python Imaging Library
+
+
+The following command, included for convenience, should install all dependencies on
+debian/ubuntu-based systems:
+sudo apt-get install python-numpy python-matplotlib python-imaging
