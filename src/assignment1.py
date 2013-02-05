@@ -58,6 +58,8 @@ pl.show()
 
 ## Question 1.5
 _, axes = pl.subplots(2, 4, sharex=True, sharey='row')
+pl.title('Question 1.5')
+
 axes[0,0].hist(xsamples, normed=True, bins=5)
 axes[0,1].hist(xsamples, normed=True, bins=10)
 axes[0,2].hist(xsamples, normed=True, bins=20)
@@ -67,8 +69,23 @@ axes[1,1].hist(ysamples, normed=True, bins=10)
 axes[1,2].hist(ysamples, normed=True, bins=20)
 axes[1,3].hist(ysamples, normed=True, bins=30)
 
-pl.title('Question 1.5')
 pl.show()
+
+## Question 1.6
+pl.figure()
+pl.title('Question 1.6')
+xs = np.mgrid[-1:3:100j]
+vs = gauss(xs, mu[0,0], sigma[0,0])
+
+pl.hist(xsamples, normed=True, bins=30, color='g')
+pl.plot(xs, vs, 'r-')
+
+pl.show()
+
+# \mu = 1, \sigma = 0.3
+# p_1(x) = \frac{1}{0.3\sqrt{2\pi}} \exp \left\{ -\frac{1}{2 \cdot 0.3^2} (x - 1)^2 \right\}
+
+## Question 1.7
 
 
 # Question 1.9
