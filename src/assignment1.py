@@ -34,11 +34,15 @@ pl.show()
 ## Question 1.2
 sigma = np.mat("0.3 0.2; 0.2 0.2")
 mu = np.mat("1;1")
-zlist = [pl.randn(2,1) for i in range(100)]
-L = np.linalg.cholesky(sigma)
-samples = [mu + L*z for z in zlist]
-#print "samples:\n", samples
 
+def gen_samples(n):
+    zlist = [pl.randn(2,1) for i in range(100)]
+    L = np.linalg.cholesky(sigma)
+    samples = [mu + L*z for z in zlist]
+    xsamples, ysamples = [x[0][0,0] for x in samples], [x[1][0,0] for x in samples]
+    return (samples, xsamples, ysamples)
+
+samples, xsamples, ysamples = gen_samples(100)
 
 ## Question 1.3
 mu_estimate    = sum(samples) / len(samples)
@@ -47,7 +51,6 @@ sigma_estimate = sum([(x - mu_estimate)*(x - mu_estimate).T for x in samples]) /
 print "mu:", mu_estimate
 print "sigma:", sigma_estimate.shape
 
-xsamples, ysamples = [x[0][0,0] for x in samples], [x[1][0,0] for x in samples]
 pl.plot(xsamples, ysamples,'ro', mu[0], mu[1], 'gv', mu_estimate[0], mu_estimate[1],'bo')
 ##TODO: Quantify in another way?
 print "Sample mean deviation:", (mu - mu_estimate)[0,0]
@@ -57,8 +60,8 @@ pl.show()
 ## TODO
 
 ## Question 1.5
-_, axes = pl.subplots(2, 4, sharex=True, sharey='row')
-pl.title('Question 1.5')
+f, axes = pl.subplots(2, 4, sharex=True, sharey='row')
+f.suptitle('Question 1.5')
 
 axes[0,0].hist(xsamples, normed=True, bins=5)
 axes[0,1].hist(xsamples, normed=True, bins=10)
@@ -86,7 +89,18 @@ pl.show()
 # p_1(x) = \frac{1}{0.3\sqrt{2\pi}} \exp \left\{ -\frac{1}{2 \cdot 0.3^2} (x - 1)^2 \right\}
 
 ## Question 1.7
+ks, kxs, kys = gen_samples(1000)
+tks, tkxs, tkys = gen_samples(10000)
+f, axes = pl.subplots(2, 3)
+f.suptitle('Question 1.7')
 
+axes[0,0].hist2d(kxs, kys, bins=(10,10))
+axes[0,1].hist2d(kxs, kys, bins=(15,15))
+axes[0,2].hist2d(kxs, kys, bins=(20,20))
+axes[1,0].hist2d(xsamples, ysamples, bins=(15,15))
+axes[1,1].hist2d(kxs, kys, bins=(15,15))
+axes[1,2].hist2d(tkxs, tkys, bins=(15,15))
+pl.show()
 
 # Question 1.9
 im = Image.open('kande1.jpg').load()
