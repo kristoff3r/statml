@@ -148,9 +148,20 @@ def prob_density(x, mu, sigma, sigma_inv):
 probabilities = np.array([prob_density(x, mu_ml, sigma_ml, sigma_ml_inv) for x in image])
 pixvals = 255*probabilities.reshape(size[1], size[0])
 pl.figure()
+pl.title('Question 1.9')
 pl.imshow(pixvals, interpolation='nearest', cmap=pl.cm.afmhot)
 pl.show()
 
 
 # Question 1.11
+img = Image.open('kande2.jpg')
+size = img.size
+im = img.load()
+image = [np.array(im[x,y]).reshape((3,1))*1.0 for y in range(size[1]) for x in range(size[0])]
 
+probabilities = np.array([prob_density(x, mu_ml, sigma_ml, sigma_ml_inv) for x in image])
+pixvals = 255*probabilities.reshape(size[1], size[0])
+pl.figure()
+pl.title('Question 1.11')
+pl.imshow(pixvals, interpolation='nearest', cmap=pl.cm.afmhot)
+pl.show()
