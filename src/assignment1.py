@@ -9,7 +9,7 @@ def gauss(x, mu, sigma):
     return 1/(np.sqrt(2*np.pi)*sigma) * np.exp(-((x-mu)**2)/(2*sigma**2))
 
 ## Question 1.1
-pl.figure(1)
+pl.figure()
 pl.title('Question 1.1')
 
 pl.subplot(311)
@@ -115,10 +115,8 @@ def exp_sample(l, n):
     """ n samples from the exponential distribution with parameter l. """
     return [exp_transform(l, random.random()) for i in range(n)]
 
-print exp_sample(2, 10)
-    
-l = 2
-true_mean = 1/l
+l = 2.0
+true_mean = 1.0/l
 cats = range(10, 1000, 100)
 sample_means = [
     [ fabs(true_mean - sum(exp_sample(l, n))) for i in range(1000) ]
@@ -126,9 +124,33 @@ sample_means = [
 ]
 pl.boxplot(sample_means)
 pl.xticks(range(1, len(cats)+1, 1), cats)
-pl.show()    
-    
-    
+pl.show()
+
+
 ## Question 1.9
-im = Image.open('kande1.jpg').load()
-training_set = [im[x,y] for x in range(150,330) for y in range(264,328)]
+img = Image.open('kande1.jpg')
+size = img.size
+im = img.load()
+training_set = [np.array(im[x,y]).reshape((3,1))*1.0 for x in range(150,330) for y in range(264,328)]
+image = [np.array(im[x,y]).reshape((3,1))*1.0 for y in range(size[1]) for x in range(size[0])]
+
+# Maximum likelyhood solution for sample mean
+mu_ml = sum(training_set) / len(training_set)
+sigma_ml = sum([np.dot((x - mu_ml),(x - mu_ml).T) for x in training_set]) / len(training_set)
+sigma_ml_inv = np.linalg.inv(sigma_ml)
+
+def prob_density(x, mu, sigma, sigma_inv):
+    exponent = -(0.5)*(np.dot((x-mu).T,np.dot(sigma_inv, (x-mu))))[0,0]
+    denominator = (2.0*np.pi)**(1.5) * np.linalg.norm(sigma)**(0.5)
+    return 1/denominator * np.exp(exponent)
+
+
+probabilities = np.array([prob_density(x, mu_ml, sigma_ml, sigma_ml_inv) for x in image])
+pixvals = 255*probabilities.reshape(size[1], size[0])
+pl.figure()
+pl.imshow(pixvals, interpolation='nearest', cmap=pl.cm.afmhot)
+pl.show()
+
+
+# Question 1.11
+
