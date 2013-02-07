@@ -2,11 +2,13 @@
 import pylab as pl
 import numpy as np
 from PIL import Image
+import random
+from math import log, fabs
 
 def gauss(x, mu, sigma):
     return 1/(np.sqrt(2*np.pi)*sigma) * np.exp(-((x-mu)**2)/(2*sigma**2))
 
-# Question 1.1
+## Question 1.1
 pl.figure(1)
 pl.title('Question 1.1')
 
@@ -102,6 +104,31 @@ axes[1,1].hist2d(kxs, kys, bins=(15,15))
 axes[1,2].hist2d(tkxs, tkys, bins=(15,15))
 pl.show()
 
-# Question 1.9
+## Question 1.8
+def exp_transform(l, z):
+    """ Transforms a uniformly distributed on the unit interval to an
+        expontentially distributed value with parameter l.
+        Inverse taken from p. 526, ex 11.2. """
+    return -1/l * log(1 - z)
+
+def exp_sample(l, n):
+    """ n samples from the exponential distribution with parameter l. """
+    return [exp_transform(l, random.random()) for i in range(n)]
+
+print exp_sample(2, 10)
+    
+l = 2
+true_mean = 1/l
+cats = range(10, 1000, 100)
+sample_means = [
+    [ fabs(true_mean - sum(exp_sample(l, n))) for i in range(1000) ]
+    for n in cats
+]
+pl.boxplot(sample_means)
+pl.xticks(range(1, len(cats)+1, 1), cats)
+pl.show()    
+    
+    
+## Question 1.9
 im = Image.open('kande1.jpg').load()
 training_set = [im[x,y] for x in range(150,330) for y in range(264,328)]
