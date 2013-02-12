@@ -65,15 +65,13 @@ pl.show()
 f, axes = pl.subplots(2, 4, sharey='row')
 f.suptitle('Question 1.5')
 
-axes[0,0].hist(xsamples, normed=True, bins=5)
-axes[0,1].hist(xsamples, normed=True, bins=10)
-axes[0,2].hist(xsamples, normed=True, bins=20)
-axes[0,3].hist(xsamples, normed=True, bins=30)
-axes[1,0].hist(ysamples, normed=True, bins=5)
-axes[1,1].hist(ysamples, normed=True, bins=10)
-axes[1,2].hist(ysamples, normed=True, bins=20)
-axes[1,3].hist(ysamples, normed=True, bins=30)
+bins = [5,10,20,30]
+samples = [xsamples, ysamples]
 
+for i in range(2):
+    for j in range(4):
+        axes[i,j].hist(samples[i], normed=True, bins=bins[j])
+        axes[i,j].set_title('bins = %d' % bins[j])
 
 for foo in axes:
     for axis in foo:
