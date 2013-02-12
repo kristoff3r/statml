@@ -3,7 +3,7 @@ import pylab as pl
 import numpy as np
 from PIL import Image
 import random
-from math import log, fabs
+from math import log, fabs, sqrt
 
 def gauss(x, mu, sigma):
     return 1/(np.sqrt(2*np.pi)*sigma) * np.exp(-((x-mu)**2)/(2*sigma**2))
@@ -66,12 +66,16 @@ f, axes = pl.subplots(2, 4, sharey='row')
 f.suptitle('Question 1.5')
 
 bins = [5,10,20,30]
+varians = [0.3, 0.2]
 samples = [xsamples, ysamples]
 
 for i in range(2):
     for j in range(4):
         axes[i,j].hist(samples[i], normed=True, bins=bins[j])
         axes[i,j].set_title('bins = %d' % bins[j])
+        x = np.mgrid[-1:3:100j]
+        value = gauss(x,1,sqrt(varians[i]))
+        axes[i,j].plot(x,value,'r-')
 
 for foo in axes:
     for axis in foo:
@@ -84,9 +88,9 @@ pl.show()
 pl.figure()
 pl.title('Question 1.6')
 xs = np.mgrid[-1:3:100j]
-vs = gauss(xs, mu[0,0], sigma[0,0])
+vs = gauss(xs, mu[0,0], sqrt(sigma[0,0]))
 
-pl.hist(xsamples, normed=True, bins=30, color='g')
+pl.hist(xsamples, normed=True, bins=20, color='g')
 pl.plot(xs, vs, 'r-')
 
 pl.show()
