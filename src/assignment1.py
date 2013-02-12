@@ -95,8 +95,8 @@ pl.plot(xs, vs, 'r-')
 
 pl.show()
 
-# \mu = 1, \sigma = 0.3
-# p_1(x) = \frac{1}{0.3\sqrt{2\pi}} \exp \left\{ -\frac{1}{2 \cdot 0.3^2} (x - 1)^2 \right\}
+# \mu = 1, \sigma = \sqrt{0.3}
+# p_1(x) = \frac{1}{\sqrt{0.3*2\pi}} \exp \left\{ -\frac{1}{2 \cdot 0.3} (x - 1)^2 \right\}
 
 ## Question 1.7
 ks, kxs, kys = gen_samples(1000)
