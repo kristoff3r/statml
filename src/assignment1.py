@@ -62,7 +62,7 @@ pl.show()
 ## TODO
 
 ## Question 1.5
-f, axes = pl.subplots(2, 4, sharex=True, sharey='row')
+f, axes = pl.subplots(2, 4, sharey='row')
 f.suptitle('Question 1.5')
 
 axes[0,0].hist(xsamples, normed=True, bins=5)
@@ -73,6 +73,12 @@ axes[1,0].hist(ysamples, normed=True, bins=5)
 axes[1,1].hist(ysamples, normed=True, bins=10)
 axes[1,2].hist(ysamples, normed=True, bins=20)
 axes[1,3].hist(ysamples, normed=True, bins=30)
+
+
+for foo in axes:
+    for axis in foo:
+        for label in axis.get_xticklabels():
+            label.set_rotation(random.randrange(-90,90))
 
 pl.show()
 
@@ -119,7 +125,7 @@ l = 2.0
 true_mean = 1.0/l
 cats = range(10, 1000, 100)
 sample_means = [
-    [ fabs(true_mean - sum(exp_sample(l, n))) for i in range(1000) ]
+    [ fabs(true_mean - sum(exp_sample(l, n))/n) for i in range(1000) ]
     for n in cats
 ]
 pl.boxplot(sample_means)
@@ -128,40 +134,89 @@ pl.show()
 
 
 ## Question 1.9
+
+# Load image
 img = Image.open('kande1.jpg')
-size = img.size
+(ysize, xsize) = img.size
 im = img.load()
+
+# Extract training set
 training_set = [np.array(im[x,y]).reshape((3,1))*1.0 for x in range(150,330) for y in range(264,328)]
-image = [np.array(im[x,y]).reshape((3,1))*1.0 for y in range(size[1]) for x in range(size[0])]
+
+# Convert image to list of pixels
+image = [np.array(im[y,x]).reshape((3,1))*1.0 for x in range(xsize) for y in range(ysize)]
 
 # Maximum likelyhood solution for sample mean
 mu_ml = sum(training_set) / len(training_set)
+
+# Maximum likelyhood solution for covariance matrix
 sigma_ml = sum([np.dot((x - mu_ml),(x - mu_ml).T) for x in training_set]) / len(training_set)
+
+# Covariance matrix inverse
 sigma_ml_inv = np.linalg.inv(sigma_ml)
 
+# Probability density function
 def prob_density(x, mu, sigma, sigma_inv):
-    exponent = -(0.5)*(np.dot((x-mu).T,np.dot(sigma_inv, (x-mu))))[0,0]
+    try:
+        exponent = -(0.5)*(np.dot((x-mu).T,np.dot(sigma_inv, (x-mu))))
+    except Exception as e:
+        print x, mu, sigma, sigma_inv, e
     denominator = (2.0*np.pi)**(1.5) * np.linalg.norm(sigma)**(0.5)
     return 1/denominator * np.exp(exponent)
 
+# Calculate probability density for the image
+probabilities = np.array([prob_density(x, mu_ml, sigma_ml, sigma_ml_inv) for x in image]).reshape(xsize,ysize)
 
-probabilities = np.array([prob_density(x, mu_ml, sigma_ml, sigma_ml_inv) for x in image])
-pixvals = 255*probabilities.reshape(size[1], size[0])
 pl.figure()
-pl.title('Question 1.9')
-pl.imshow(pixvals, interpolation='nearest', cmap=pl.cm.afmhot)
+pl.title('Question 1.9+1.10')
+pl.imshow(255*probabilities, interpolation='nearest', cmap=pl.cm.afmhot)
+
+# Question 1.10
+
+# Weighted average position
+weighted_points = [np.array([x,y])*probabilities[x,y] for x in range(xsize) for y in range(ysize)]
+Z = sum(probabilities.reshape(ysize*xsize))
+q_hat = sum(weighted_points) / Z
+
+# Spacial covariance
+prob_sum = np.zeros((2,2))
+for x in range(xsize):
+    for y in range(ysize):
+        q = np.array([y,x]).reshape(2,1)
+        part = np.dot((q-q_hat),(q-q_hat).T) * probabilities[x,y]
+        prob_sum += part
+
+C = prob_sum / Z
+C_inv = np.linalg.inv(C)
+
+probabilities = np.array([prob_density(np.array([x,y]), q_hat, C, C_inv) for x in range(xsize) for y in range(ysize)]).reshape(xsize,ysize)
+
+pl.contour(probabilities)
+pl.scatter(q_hat[1], q_hat[0], c='g', s=100, marker='v')
 pl.show()
 
 
 # Question 1.11
-img = Image.open('kande2.jpg')
-size = img.size
-im = img.load()
-image = [np.array(im[x,y]).reshape((3,1))*1.0 for y in range(size[1]) for x in range(size[0])]
+# Mostly copy&paste from 1.9 because of dependencies
 
-probabilities = np.array([prob_density(x, mu_ml, sigma_ml, sigma_ml_inv) for x in image])
-pixvals = 255*probabilities.reshape(size[1], size[0])
+# Load image
+img = Image.open('kande2.jpg')
+(ysize, xsize) = img.size
+im = img.load()
+
+# Convert image to list of pixels
+image = [np.array(im[y,x]).reshape((3,1))*1.0 for x in range(xsize) for y in range(ysize)]
+
+# Calculate probability density for the image
+probabilities = np.array([prob_density(x, mu_ml, sigma_ml, sigma_ml_inv) for x in
+    image]).reshape(xsize,ysize)
+
+# Weighted average position
+weighted_points = [np.array([x,y])*probabilities[x,y] for x in range(xsize) for y in range(ysize)]
+weighted_average_pos = sum(weighted_points)  / sum(probabilities.reshape(ysize*xsize))
+
 pl.figure()
 pl.title('Question 1.11')
-pl.imshow(pixvals, interpolation='nearest', cmap=pl.cm.afmhot)
+pl.imshow(255*probabilities, interpolation='nearest', cmap=pl.cm.afmhot)
+pl.scatter(weighted_average_pos[1], weighted_average_pos[0], c='g', s=100, marker='v')
 pl.show()
