@@ -99,17 +99,22 @@ pl.show()
 # p_1(x) = \frac{1}{\sqrt{0.3*2\pi}} \exp \left\{ -\frac{1}{2 \cdot 0.3} (x - 1)^2 \right\}
 
 ## Question 1.7
-ks, kxs, kys = gen_samples(1000)
-tks, tkxs, tkys = gen_samples(10000)
+
 f, axes = pl.subplots(2, 3)
 f.suptitle('Question 1.7')
 
-axes[0,0].hist2d(kxs, kys, bins=(10,10))
-axes[0,1].hist2d(kxs, kys, bins=(15,15))
-axes[0,2].hist2d(kxs, kys, bins=(20,20))
-axes[1,0].hist2d(xsamples, ysamples, bins=(15,15))
-axes[1,1].hist2d(kxs, kys, bins=(15,15))
-axes[1,2].hist2d(tkxs, tkys, bins=(15,15))
+bins = [10,15,20]
+ks, kxs, kys = gen_samples(1000)
+for i in range(3):
+    axes[0,i].set_title("bins = %dx%d" % (bins[i], bins[i]))
+    axes[0,i].hist2d(kxs, kys, bins=(bins[i],bins[i]))
+
+sample_nums = [100, 1000, 10000]
+for i in range(3):
+    s, xs, ys = gen_samples(sample_nums[i])
+    axes[1,i].set_title("samples = %d" % sample_nums[i])
+    axes[1,i].hist2d(xs, ys, bins=(15,15))
+    
 pl.show()
 
 ## Question 1.8
