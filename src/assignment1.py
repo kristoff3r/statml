@@ -128,6 +128,8 @@ def exp_sample(l, n):
     """ n samples from the exponential distribution with parameter l. """
     return [exp_transform(l, random.random()) for i in range(n)]
 
+f, axes = pl.subplots(2)
+    
 l = 2.0
 true_mean = 1.0/l
 cats = range(10, 1000, 100)
@@ -135,8 +137,13 @@ sample_means = [
     [ fabs(true_mean - sum(exp_sample(l, n))/n) for i in range(1000) ]
     for n in cats
 ]
-pl.boxplot(sample_means)
-pl.xticks(range(1, len(cats)+1, 1), cats)
+
+axes[0].boxplot(sample_means)
+axes[0].set_xticks(range(1, len(cats)+1, 1), cats)
+axes[1].boxplot(sample_means)
+axes[1].set_xticks(range(1, len(cats)+1, 1), cats)
+axes[1].set_yscale('log')
+
 pl.show()
 
 
