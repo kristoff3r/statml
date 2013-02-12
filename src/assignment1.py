@@ -114,7 +114,7 @@ for i in range(3):
     s, xs, ys = gen_samples(sample_nums[i])
     axes[1,i].set_title("samples = %d" % sample_nums[i])
     axes[1,i].hist2d(xs, ys, bins=(15,15))
-    
+
 pl.show()
 
 ## Question 1.8
@@ -129,7 +129,7 @@ def exp_sample(l, n):
     return [exp_transform(l, random.random()) for i in range(n)]
 
 f, axes = pl.subplots(2)
-    
+
 l = 2.0
 true_mean = 1.0/l
 cats = range(10, 1000, 100)
@@ -181,9 +181,12 @@ def prob_density(x, mu, sigma, sigma_inv):
 # Calculate probability density for the image
 probabilities = np.array([prob_density(x, mu_ml, sigma_ml, sigma_ml_inv) for x in image]).reshape(xsize,ysize)
 
+pitcher_img = 255*probabilities
+
 pl.figure()
-pl.title('Question 1.9+1.10')
-pl.imshow(255*probabilities, interpolation='nearest', cmap=pl.cm.afmhot)
+pl.title('Question 1.9')
+pl.imshow(pitcher_img, interpolation='nearest', cmap=pl.cm.afmhot)
+pl.show()
 
 # Question 1.10
 
@@ -205,6 +208,9 @@ C_inv = np.linalg.inv(C)
 
 probabilities = np.array([prob_density(np.array([x,y]), q_hat, C, C_inv) for x in range(xsize) for y in range(ysize)]).reshape(xsize,ysize)
 
+pl.figure()
+pl.title('Question 1.10')
+pl.imshow(pitcher_img, interpolation='nearest', cmap=pl.cm.afmhot)
 pl.contour(probabilities)
 pl.scatter(q_hat[1], q_hat[0], c='g', s=100, marker='v')
 pl.show()
