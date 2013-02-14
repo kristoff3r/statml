@@ -183,9 +183,12 @@ probabilities = np.array([prob_density(x, mu_ml, sigma_ml, sigma_ml_inv) for x i
 
 pitcher_img = 255*probabilities
 
+# good color map: pl.cm.afmhot
+COLORMAP = pl.cm.PuRd_r
+
 pl.figure()
 pl.title('Question 1.9')
-pl.imshow(pitcher_img, interpolation='nearest', cmap=pl.cm.afmhot)
+pl.imshow(pitcher_img, interpolation='nearest', cmap=COLORMAP)
 pl.show()
 
 # Question 1.10
@@ -210,7 +213,7 @@ probabilities = np.array([prob_density(np.array([x,y]), q_hat, C, C_inv) for x i
 
 pl.figure()
 pl.title('Question 1.10')
-pl.imshow(pitcher_img, interpolation='nearest', cmap=pl.cm.afmhot)
+pl.imshow(pitcher_img, interpolation='nearest', cmap=COLORMAP)
 pl.contour(probabilities)
 pl.scatter(q_hat[1], q_hat[0], c='g', s=100, marker='v')
 pl.show()
