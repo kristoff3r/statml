@@ -184,7 +184,7 @@ probabilities = np.array([prob_density(x, mu_ml, sigma_ml, sigma_ml_inv) for x i
 pitcher_img = 255*probabilities
 
 # good color map: pl.cm.afmhot
-COLORMAP = pl.cm.PuRd_r
+COLORMAP = pl.cm.PuRd
 
 pl.figure()
 pl.title('Question 1.9')
