@@ -194,11 +194,11 @@ weighted_points = [np.array([x,y])*probabilities[x,y] for x in range(xsize) for 
 Z = sum(probabilities.reshape(ysize*xsize))
 q_hat = sum(weighted_points) / Z
 
-# Spacial covariance
+# Spatial covariance
 prob_sum = np.zeros((2,2))
 for x in range(xsize):
     for y in range(ysize):
-        q = np.array([y,x]).reshape(2,1)
+        q = np.array([x,y]).reshape(2,1)
         part = np.dot((q-q_hat),(q-q_hat).T) * probabilities[x,y]
         prob_sum += part
 
@@ -210,7 +210,7 @@ probabilities = np.array([prob_density(np.array([x,y]), q_hat, C, C_inv) for x i
 pl.figure()
 pl.title('Question 1.10')
 pl.imshow(pitcher_img, interpolation='nearest', cmap=COLORMAP)
-pl.contour(probabilities)
+pl.contour(probabilities, 10)
 pl.scatter(q_hat[1], q_hat[0], c='g', s=100, marker='v')
 pl.show()
 
