@@ -51,15 +51,11 @@ mu_estimate    = sum(samples) / len(samples)
 sigma_estimate = sum([(x - mu_estimate)*(x - mu_estimate).T for x in samples]) / len(samples)
 
 print "mu:", mu_estimate
-print "sigma:", sigma_estimate.shape
+print "sigma:", sigma_estimate
 
 pl.plot(xsamples, ysamples,'ro', mu[0], mu[1], 'gv', mu_estimate[0], mu_estimate[1],'bo')
-##TODO: Quantify in another way?
 print "Sample mean deviation:", (mu - mu_estimate)[0,0]
 pl.show()
-
-## Question 1.4
-## TODO
 
 ## Question 1.5
 f, axes = pl.subplots(2, 4, sharey='row')
