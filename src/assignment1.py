@@ -236,6 +236,6 @@ weighted_average_pos = sum(weighted_points)  / sum(probabilities.reshape(ysize*x
 
 pl.figure()
 pl.title('Question 1.11')
-pl.imshow(255*probabilities, interpolation='nearest', cmap=pl.cm.afmhot)
+pl.imshow(255*probabilities, interpolation='nearest', cmap=COLORMAP)
 pl.scatter(weighted_average_pos[1], weighted_average_pos[0], c='g', s=100, marker='v')
 pl.show()
