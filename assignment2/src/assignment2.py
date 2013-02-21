@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import pylab as pl
 import numpy as np
-import csv
+import Queue as q
 
 
 # Question 1.1
@@ -94,3 +94,22 @@ plotGroup(irisTrain, 2, 'ro')
 pl.show()
 
 # TODO: LDA
+
+# Question 2.2
+
+def norm(x):
+    return np.sqrt(sum([xi**2 for xi in x]))
+
+def distance(x,y):
+    return norm(x-y)
+
+def ndistance(x,y):
+    M = np.array([1, 0, 0, 10]).reshape(2,2)
+    return norm(np.dot(M,x-y))
+
+
+def kNN(x,k):
+    nearest = q.Queue()
+    maxnear = 0
+    for y in irisTrain:
+        d = distance(x,y)
