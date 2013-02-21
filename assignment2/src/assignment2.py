@@ -84,6 +84,9 @@ irisTest = np.loadtxt('data/irisTest.dt', ndmin=2)
 pl.figure()
 def plotGroup(data, n, color):
     points = [(r[0], r[1]) for r in data if r[2] == n]
+    if len(points) == 0:
+        # Prevent error if no points are misclassified in a group
+        return
     ls, ws = zip(*points)
     pl.plot(ls, ws, color)
 
@@ -100,18 +103,41 @@ pl.show()
 def norm(x):
     return np.sqrt(sum([xi**2 for xi in x]))
 
-def distance(x,y):
+def distance(x,y,norm):
     return norm(x-y)
 
-def ndistance(x,y):
+def mnorm(x):
     M = np.array([1, 0, 0, 10]).reshape(2,2)
-    return norm(np.dot(M,x-y))
+    return norm(np.dot(M,x))
 
-def kNN(x,k): # assumes data in col 0,1, category in col 2
+def kNN(x,k,norm): # assumes data in col 0,1, category in col 2
     nearest = q.PriorityQueue()
     for y in irisTrain:
-        d = distance(x[0:2],y[0:2])
-        nearest.put((d, y))
+        d = distance(x[0:2],y[0:2],norm)
+        nearest.put((d, y[2]))
 
-    closecats = [nearest.get()[1,2] for y in range(k)]
+    closecats = [nearest.get()[1] for y in range(k)]
     return max(set(closecats), key=closecats.count)
+
+def plot_knn(k,norm):
+    group = []
+    for x in irisTest:
+        category = kNN(x,k,norm)
+        group.append((x[0],x[1],(category, category == x[2])))
+
+    print "kNN failures for k = ", k, ": ", len([1 for x in group if not x[2][1]])
+
+    pl.figure()
+    plotGroup(irisTrain, 0, 'y^')
+    plotGroup(irisTrain, 1, 'b^')
+    plotGroup(irisTrain, 2, 'r^')
+    plotGroup(group, (0, True), 'yo')
+    plotGroup(group, (1, True), 'bo')
+    plotGroup(group, (2, True), 'ro')
+    plotGroup(group, (0, False), 'yx')
+    plotGroup(group, (1, False), 'bx')
+    plotGroup(group, (2, False), 'rx')
+    pl.show()
+
+for k in [1,3,5,7]: plot_knn(k,norm)
+for k in [1,3,5,7]: plot_knn(k,mnorm)
