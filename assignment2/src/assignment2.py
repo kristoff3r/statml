@@ -107,9 +107,11 @@ def ndistance(x,y):
     M = np.array([1, 0, 0, 10]).reshape(2,2)
     return norm(np.dot(M,x-y))
 
-
-def kNN(x,k):
-    nearest = q.Queue()
-    maxnear = 0
+def kNN(x,k): # assumes data in col 0,1, category in col 2
+    nearest = q.PriorityQueue()
     for y in irisTrain:
-        d = distance(x,y)
+        d = distance(x[0:2],y[0:2])
+        nearest.put((d, y))
+
+    closecats = [nearest.get()[1,2] for y in range(k)]
+    return max(set(closecats), key=closecats.count)
