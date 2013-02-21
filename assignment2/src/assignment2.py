@@ -2,35 +2,40 @@
 import numpy as np
 import csv
 
-def readSharkData(filename):
-    '''Reads data stored in Shark ASCII format.
+# Question 1.1
+bfT = np.loadtxt('../Data/bodyfat.txt', skiprows=117, usecols=(1,), ndmin=2)
+bfSel1 = np.loadtxt('../Data/bodyfat.txt', skiprows=117, usecols=(4,7,8,9), ndmin=2)
+bfSel2 = np.loadtxt('../Data/bodyfat.txt', skiprows=117, usecols=(8,), ndmin=2)
 
-    Arguments: data file, for example '../Data/C.asc'
-    Returns:   description of proteins, list of corresponding labels'''
+# basis function
+def phi(x):
+    a = [e for e in x]
+    a.insert(0, 1)
+    return a
 
-    fi         = open(filename)
+def phiC(x):
+    return np.array(phi(x)).reshape(-1, 1)
 
-    # read header
-    dr         = csv.reader(fi, delimiter=' ', quoting =csv.QUOTE_NONE)
-    header     = dr.next()
-    if(len(header) != 5):
-        raise NameError(filename + ' does not have a valid header')
-    if(header[0] != '#'):
-        raise NameError(filename + ' does not have a valid header')
-    if(header[4] != 'ascii'):
-        raise NameError(filename + ' is not in ascii format')
-    N          = int(header[1])
-    attributes = int(header[2])
-    outputs    = int(header[3])
+def designMatrix(dataset):
+    return np.array( [ phi(x) for x in dataset ] )
 
-    # read attributes
-    fi.seek(0)
-    X = np.loadtxt(fi, dtype='d', delimiter=' ', comments='#', usecols=range(0, attributes))
-    # readl labels
-    fi.seek(0) # here is room for speed improvements
-    y = np.loadtxt(fi, dtype='d', delimiter=' ', comments='#', usecols=range(attributes, attributes+outputs))
+designSel1 = designMatrix(bfSel1)
+designSel2 = designMatrix(bfSel2)
 
-    fi.close()
-    if(len(y) != N):
-        raise NameError('number of patterns in ' + filename + ' does not match header')
-    return X, y
+def w_ml(Phi, t):
+    return np.dot(np.linalg.pinv(Phi), t)
+
+wMLSel1 = w_ml(designSel1, bfT)
+wMLSel2 = w_ml(designSel2, bfT)
+
+def y(x, w): return np.dot(w.T, phiC(x))
+
+def rms(x, t, w):
+    (N, _) = x.shape
+    return 1.0 / N * sum((t[n] - y(x[n], w))**2 for n in range(N))
+
+rmsSel1 = rms(bfSel1, bfT, wMLSel1)
+rmsSel2 = rms(bfSel2, bfT, wMLSel2)
+
+print rmsSel1
+print rmsSel2
