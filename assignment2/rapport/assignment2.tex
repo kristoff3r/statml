@@ -17,19 +17,49 @@
 \maketitle
 
 \section{Question 2.3}
-$d(\bm{x},\bm{y}) = \| \bm{Mx} - \bm{Mz} \|$ \\ \\
-$\bm{M} = \begin{pmatrix} 1 & 0 \\ 0 & 10 \end{pmatrix}$ \\
+We are given the function
+$$d(\bm{x},\bm{z}) = \| \bm{Mx} - \bm{Mz} \|_{2} = \| \bm{M}(\bm{x} - \bm{z}) \|_{2}$$
+
+where
+$$\bm{M} = \begin{pmatrix} 1 & 0 \\ 0 & 10 \end{pmatrix}$$
 
 In order to be a metric, the function $d$ must satisfy the following conditions:
 
 \begin{enumerate}
-    \item $d(\bm{x},\bm{y}) \geq 0$
-    \item $d(\bm{x},\bm{y}) = 0$\ \ \ iff $x = y$
-    \item $d(\bm{x},\bm{y}) = d(\bm{y},\bm{x})$
+    \item $d(\bm{x},\bm{z}) \geq 0$
+    \item $d(\bm{x},\bm{z}) = 0$\ \ \ iff $x = z$
+    \item $d(\bm{x},\bm{z}) = d(\bm{z},\bm{x})$
     \item $d(\bm{x},\bm{z}) \leq d(\bm{x},\bm{y}) + d(\bm{y},\bm{z})$
 \end{enumerate}
 
-We check each condition in order:
+All of the conditions follow directly from the definition of a norm, which has the
+following properties:
+
+\begin{enumerate}
+    \setcounter{enumi}{4}
+    \item $\| a\bm{x}\| = |a|\| \bm{x} \|$
+    \item $\| \bm{x} \| \geq 0$
+    \item $\| \bm{x} \| = 0$\ \ \ iff $\bm{x} = 0$
+    \item $\| \bm{x} + \bm{y} \| \leq \| \bm{x} \| + \| \bm{y} \|$
+\end{enumerate}
+
+Because $d$ is a norm, it is trivial that $(1)$ follows from $(6)$ and $(2)$ follows from $(7)$. Because of $(5)$ we get that 
+
+\begin{align*}
+    d(\bm{x}, \bm{z}) &= \| \bm{M}(\bm{x} - \bm{z}) \|_{2} \\
+                      &= \| \bm{M}(-1\cdot(\bm{z} - \bm{x})) \|_{2} \\
+                      &= |-1|\| \bm{M}(\bm{z} - \bm{x}) \|_{2} \\
+                      &= \| \bm{M}(\bm{z} - \bm{x}) \|_{2} \\
+                      &= d(\bm{z},\bm{x})
+\end{align*}
+
+which implies $(3)$. Finally, we need to check $(4)$
+
+\begin{align*}
+d(\bm{x}, \bm{y}) + 
+d(\bm{y}, \bm{z}) &= \| \bm{M}(\bm{x} - \bm{y}) \|_{2} + \| \bm{M}(\bm{y} - \bm{z}) \|_{2} \\
+                  &= \| \bm{M}(\bm{x} - \bm{y}) \|_{2} + \| \bm{M}(\bm{y} - \bm{z}) \|_{2} \\
+\end{align*}
 
 \subsection{i}
 
