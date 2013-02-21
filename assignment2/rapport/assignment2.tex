@@ -58,7 +58,9 @@ which implies $(3)$. Finally, we need to check $(4)$
 \begin{align*}
 d(\bm{x}, \bm{y}) + 
 d(\bm{y}, \bm{z}) &= \| \bm{M}(\bm{x} - \bm{y}) \|_{2} + \| \bm{M}(\bm{y} - \bm{z}) \|_{2} \\
-                  &= \| \bm{M}(\bm{x} - \bm{y}) \|_{2} + \| \bm{M}(\bm{y} - \bm{z}) \|_{2} \\
+                  &\geq \| \bm{M}(\bm{x} - \bm{y}) +  \bm{M}(\bm{y} - \bm{z}) \|_{2} \\
+                  &= \| \bm{M}(\bm{x} - \bm{z}) \|_{2} \\
+                  &= d(\bm{x},\bm{z})
 \end{align*}
 
 \subsection{i}
