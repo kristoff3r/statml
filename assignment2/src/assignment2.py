@@ -76,3 +76,21 @@ pl.plot(xs,y1,'g-')
 pl.plot(xs,y2,'b-')
 pl.show()
 
+
+# Question 2.1
+irisTrain = np.loadtxt('data/irisTrain.dt', ndmin=2)
+irisTest = np.loadtxt('data/irisTest.dt', ndmin=2)
+
+pl.figure()
+def plotGroup(data, n, color):
+    points = [(r[0], r[1]) for r in data if r[2] == n]
+    ls, ws = zip(*points)
+    pl.plot(ls, ws, color)
+
+plotGroup(irisTrain, 0, 'yo')
+plotGroup(irisTrain, 1, 'bo')
+plotGroup(irisTrain, 2, 'ro')
+
+pl.show()
+
+# TODO: LDA
