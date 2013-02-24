@@ -5,9 +5,10 @@
 \usepackage[T1]{fontenc}
 \usepackage{graphicx}
 \usepackage{bm}
+\usepackage[colorlinks=true]{hyperref}
 
 
-\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
 \newcommand{\mbf}[1]{\bm{#1}}
 
 \title{Assignment 2}
@@ -18,7 +19,38 @@
 
 
 \section{Question 1.3}
-$$p(\bm{x}|\bm{y}) = \mathcal{N}(\bm{x}|\bm{\Sigma}\{\bm{A}^T\bm{L}(\bm{y}-\bm{b}) + \bm{\Lambda\mu}\},\bm{\Sigma})$$
+We wish to find $p(w|t)$ and know that this is proportional to $p(w)p(t|w)$,
+so we ``complete the square'' by looking at the exponential term:
+\begin{align*}
+    &\exp\left(-\frac{1}{2}(w-m_0)^T S_0^{-1}(w-m_0)\right)
+    \prod_{n=1}^N \exp\left(-\frac{\beta}{2}(t_n-w^T\phi(x_n))^2\right)\\
+    = &\exp\left(-\frac{1}{2}(w-m_0)^T S_0^{-1}(w-m_0) +
+    \sum_{n=1}^N -\frac{\beta}{2}(t_n-w^T\phi(x_n))^2\right)\ .
+\end{align*}
+By looking at all the terms depending on $w$ in this formula, we can find the
+mean and covariance matrix of $p(w|t)$. From the above formula we see, that
+these terms are exactly
+\begin{align*}
+    &-\frac{1}{2}(w^TS_0^{-1}w - 2w^TS_0^{-1}m_0) -\frac{\beta}{2}
+    \sum_{n=1}^N \left(-2t_nw^T\phi(x_n) + (w^T\phi(x_n))^2\right)\\
+    = &-\frac{1}{2}(w^TS_0^{-1}w - 2w^TS_0^{-1}m_0) -\frac{\beta}{2}\left(
+    -2w^T\Phi(x)^T t + w^T\Phi(x)^T\Phi(x)w\right) \\
+    = &-\frac{1}{2}(w^TS_0^{-1}w - 2w^TS_0^{-1}m_0)
+    +\beta w^T\Phi^T t -\frac{\beta}{2} w^T\Phi^T\Phi w \\
+    = &\ w^T(S_0^{-1}m_0 + \beta\Phi^T t) - \frac{1}{2}w^T(S_0^{-1}
+    + \beta\Phi^T\Phi)w\ .
+\end{align*}
+From this we immediately get
+\[
+    \Sigma^{-1} = S_0^{-1} + \beta\Phi^T\Phi\ ,
+\]
+and we also know that the linear coefficient of $w$ above is equal to
+$\Sigma^{-1}\mu$, so we get
+\[
+    \mu = \Sigma^{-1}(S_0^{-1}m_0 + \beta\Phi^t t)\ .
+\]
+We have now proved eqn.~3.49 of \cite{Bishop}, which is what we wanted to
+do.\qed
 
 \section{Question 2.3}
 We are given the function $d : \mathbb{R}^2 \times \mathbb{R}^2 \rightarrow \mathbb{R}$ defined as
@@ -67,8 +99,13 @@ d(\bm{y}, \bm{z}) &= \| \bm{M}(\bm{x} - \bm{y}) \|_{2} + \| \bm{M}(\bm{y} - \bm{
                   &= d(\bm{x},\bm{z})
 \end{align*}
 
-\subsection{i}
 
-
+\begin{thebibliography}{9}
+    \bibitem{Bishop}
+        C. M. Bishop,
+        \emph{Pattern Recognition and Machine Learning},
+        Springer Verlag,
+        2006.
+\end{thebibliography}
 
 \end{document}
