@@ -6,10 +6,26 @@ import Queue as q
 from math import sqrt
 
 # Question 1.1
-bfT = np.loadtxt('data/bodyfat.txt', skiprows=117, usecols=(1,), ndmin=2)
-bfSel1 = np.loadtxt('data/bodyfat.txt', skiprows=117, usecols=(4,7,8,9), ndmin=2)
-bfSel2 = np.loadtxt('data/bodyfat.txt', skiprows=117, usecols=(8,), ndmin=2)
+bfSel1 = np.loadtxt('data/bodyfat.txt', skiprows=117, usecols=(1,4,7,8,9), ndmin=2)
+bfSel2 = np.loadtxt('data/bodyfat.txt', skiprows=117, usecols=(1,8), ndmin=2)
 
+def partition(inset, p=0.8):
+    data = np.copy(inset)
+    np.random.shuffle(data)
+    
+    N = data.shape[0]
+    return (data[:int(N * p)], data[int(N * p):])
+
+(sel1Train, sel1Test) = partition(bfSel1)
+(sel2Train, sel2Test) = partition(bfSel2)
+
+def extractT(data):
+    return (data[:,0].reshape(-1,1), data[:,1:])
+    
+(sel1TrainT, sel1Train) = extractT(sel1Train)
+(sel1TestT, sel1Test) = extractT(sel1Test)
+(sel2TrainT, sel2Train) = extractT(sel2Train)
+(sel2TestT, sel2Test) = extractT(sel2Test)
 
 # basis function
 def phi(x):
@@ -23,24 +39,25 @@ def phiC(x):
 def designMatrix(dataset):
     return np.array( [ phi(x) for x in dataset ] )
 
-designSel1 = designMatrix(bfSel1)
-designSel2 = designMatrix(bfSel2)
+designSel1 = designMatrix(sel1Train)
+designSel2 = designMatrix(sel2Train)
 
 def w_ml(Phi, t):
     return np.dot(np.linalg.pinv(Phi), t)
 
-wMLSel1 = w_ml(designSel1, bfT)
-wMLSel2 = w_ml(designSel2, bfT)
+wMLSel1 = w_ml(designSel1, sel1TrainT)
+wMLSel2 = w_ml(designSel2, sel2TrainT)
 
 def y(x, w):
     return np.dot(w.T, phiC(x))
 
 def rms(x, t, w):
+    print x.shape, t.shape, w.shape
     (N, _) = x.shape
     return sqrt(1.0 / N * sum((t[n] - y(x[n], w))**2 for n in range(N)))
-
-rmsSel1 = rms(bfSel1, bfT, wMLSel1)
-rmsSel2 = rms(bfSel2, bfT, wMLSel2)
+    
+rmsSel1 = rms(sel1Test, sel1TestT, wMLSel1)
+rmsSel2 = rms(sel2Test, sel2TestT, wMLSel2)
 
 print "rms #1: ", rmsSel1
 print "rms #2: ", rmsSel2
@@ -64,12 +81,12 @@ def MAP(Phi, t, alpha, beta=1):
     m_N = beta * np.dot(np.dot(S_N,Phi.T),t)
     return (m_N, S_N)
 
-m_N1, S_N1 = MAP(designSel1,bfT,0.1)
-m_N2, S_N2 = MAP(designSel2,bfT,0.1)
-rmsSel1 = rms(bfSel1, bfT, m_N1)
-rmsSel2 = rms(bfSel2, bfT, m_N2)
+m_N1, S_N1 = MAP(designSel1, sel1TrainT, 0.1)
+m_N2, S_N2 = MAP(designSel2, sel2TrainT, 0.1)
+rmsSel1 = rms(sel1Test, sel1TestT, m_N1)
+rmsSel2 = rms(sel2Test, sel2TestT, m_N2)
 pl.figure()
-pl.plot(bfSel2, bfT, 'ro')
+pl.plot(bfSel2[:,1], bfSel2[:,0], 'ro')
 xs = np.mgrid[80:150:100j]
 y1 = np.array([y([x],wMLSel2) for x in xs]).reshape(-1)
 y2 = np.array([y([x],m_N2) for x in xs]).reshape(-1)
