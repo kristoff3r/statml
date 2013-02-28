@@ -52,12 +52,14 @@ def y(x, w):
     return np.dot(w.T, phiC(x))
 
 def rms(x, t, w):
-    print x.shape, t.shape, w.shape
     (N, _) = x.shape
     return sqrt(1.0 / N * sum((t[n] - y(x[n], w))**2 for n in range(N)))
 
 rmsSel1 = rms(sel1Test, sel1TestT, wMLSel1)
 rmsSel2 = rms(sel2Test, sel2TestT, wMLSel2)
+
+print "1.1 rms1: ", rmsSel1
+print "1.1 rms2: ", rmsSel2
 
 # Question1.2
 def gauss(x, mu, sigma):
@@ -82,6 +84,10 @@ m_N1, S_N1 = MAP(designSel1, sel1TrainT, 0.1)
 m_N2, S_N2 = MAP(designSel2, sel2TrainT, 0.1)
 rmsSel1 = rms(sel1Test, sel1TestT, m_N1)
 rmsSel2 = rms(sel2Test, sel2TestT, m_N2)
+
+print "1.2 rms1: ", rmsSel1
+print "1.2 rms2: ", rmsSel2
+
 pl.figure()
 pl.plot(bfSel2[:,1], bfSel2[:,0], 'ro')
 xs = np.mgrid[80:150:100j]
