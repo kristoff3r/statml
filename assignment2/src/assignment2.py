@@ -3,6 +3,7 @@ import pylab as pl
 import numpy as np
 import Queue as q
 
+from math import sqrt
 
 # Question 1.1
 bfT = np.loadtxt('data/bodyfat.txt', skiprows=117, usecols=(1,), ndmin=2)
@@ -36,13 +37,13 @@ def y(x, w):
 
 def rms(x, t, w):
     (N, _) = x.shape
-    return 1.0 / N * sum((t[n] - y(x[n], w))**2 for n in range(N))
+    return sqrt(1.0 / N * sum((t[n] - y(x[n], w))**2 for n in range(N)))
 
 rmsSel1 = rms(bfSel1, bfT, wMLSel1)
 rmsSel2 = rms(bfSel2, bfT, wMLSel2)
 
-print rmsSel1
-print rmsSel2
+print "rms #1: ", rmsSel1
+print "rms #2: ", rmsSel2
 
 # Question1.2
 def gauss(x, mu, sigma):
