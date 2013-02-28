@@ -12,7 +12,7 @@ bfSel2 = np.loadtxt('data/bodyfat.txt', skiprows=117, usecols=(1,8), ndmin=2)
 def partition(inset, p=0.8):
     data = np.copy(inset)
     np.random.shuffle(data)
-    
+
     N = data.shape[0]
     return (data[:int(N * p)], data[int(N * p):])
 
@@ -21,7 +21,7 @@ def partition(inset, p=0.8):
 
 def extractT(data):
     return (data[:,0].reshape(-1,1), data[:,1:])
-    
+
 (sel1TrainT, sel1Train) = extractT(sel1Train)
 (sel1TestT, sel1Test) = extractT(sel1Test)
 (sel2TrainT, sel2Train) = extractT(sel2Train)
@@ -55,12 +55,9 @@ def rms(x, t, w):
     print x.shape, t.shape, w.shape
     (N, _) = x.shape
     return sqrt(1.0 / N * sum((t[n] - y(x[n], w))**2 for n in range(N)))
-    
+
 rmsSel1 = rms(sel1Test, sel1TestT, wMLSel1)
 rmsSel2 = rms(sel2Test, sel2TestT, wMLSel2)
-
-print "rms #1: ", rmsSel1
-print "rms #2: ", rmsSel2
 
 # Question1.2
 def gauss(x, mu, sigma):
