@@ -3,7 +3,7 @@ import pylab as pl
 import numpy as np
 import Queue as q
 
-from math import sqrt
+from math import sqrt, log
 
 # Question 1.1
 bfSel1 = np.loadtxt('data/bodyfat.txt', skiprows=117, usecols=(1,4,7,8,9), ndmin=2)
@@ -117,7 +117,62 @@ plotGroup(irisTrain, 2, 'ro')
 
 pl.show()
 
-# TODO: LDA
+# Question 2.1
+
+def estimate_params(data, cats):
+    # Group points by category
+    points = [[np.array([r[0], r[1]]).reshape(2,-1) for r in data if r[2] == n] for n in cats]
+
+    m = [sum(points[n]) / len(points[n]) for n in cats]
+    prob = [1.0 * len(points[n]) / len(data) for n in cats]
+    s_W = np.zeros((2,2))
+    for k in cats:
+        for x in points[k]:
+            s_W += np.dot((x-m[k]),(x-m[k]).T)
+
+    s_W /= (len(data) - len(cats))
+    return (m, s_W, prob)
+
+
+def delta(x, k, sigma_inv, mu, prob):
+    return np.dot(x.T,np.dot(sigma_inv,mu[k])) \
+            - 0.5*np.dot(np.dot(mu[k].T,sigma_inv),mu[k]) + log(prob[k])
+
+def best_category(x, sigma_inv, mu, prob, cats):
+    best_d = -1
+    best_k = None
+    for k in cats:
+        d = delta(x, k, sigma_inv, mu, prob)
+        if d > best_d:
+            best_d = d
+            best_k = k
+    return best_k
+
+m_k, s_W, prob = estimate_params(irisTrain, [0,1,2])
+s_W_inv = np.linalg.inv(s_W)
+
+def catcolor(c):
+    return ['y','b','r'][c]
+
+def cormarker(c, ec):
+    if c == ec: return 'o'
+    else:       return 'x'
+
+for p in irisTest:
+    c = best_category(p[0:2].reshape(2,1), s_W_inv, m_k, prob, [0,1,2])
+    pl.plot(p[0], p[1], catcolor(c) + cormarker(c, p[2]))
+
+pl.show()
+
+# Plot means
+plotGroup(irisTrain, 0, 'yo')
+plotGroup(irisTrain, 1, 'bo')
+plotGroup(irisTrain, 2, 'ro')
+pl.plot(m_k[0][0], m_k[0][1], 'yx')
+pl.plot(m_k[1][0], m_k[1][1], 'bx')
+pl.plot(m_k[2][0], m_k[2][1], 'rx')
+pl.show()
+
 
 # Question 2.2
 
