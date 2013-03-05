@@ -19,27 +19,42 @@
 
 \section{Question 1.1}
 Performing maximum likelihood estimation as described in
-\cite[sec. 3.1.1]{Bishop} we achieve an RMS of $4.75$ with the 4-dimensional
-data set and an RMS of $5.43$ with the 1-dimensional data set. Based on this
+\cite[sec. 3.1.1]{Bishop} we achieve an RMS of $4.32$ with the 4-dimensional
+data set and an RMS of $5.56$ with the 1-dimensional data set. Based on this
 it would seem like the 4-dimensional data set provides ud with better
-predictions.
+predictions. The regression line along with the data can be seen in
+\autoref{fig:ML}.
 
-\begin{figure}[h!]
+\begin{figure}[htbp]
     \includegraphics[width=\textwidth]{images/prob11-sel2.png}
-    \caption{Maximum likelihood plotted against the combined training \& test points for selection 2}
+    \caption{Maximum likelihood plotted against the combined training \& test
+    points for selection 2.}
+    \label{fig:ML}
 \end{figure}
 
 \section{Question 1.2}
+With MAP we were able to achieve the same precision of as with maximum
+likelihood. This depended a lot on the randomized training set, however. In
+general it looked like $\alpha < 0.1$ gave good results compared to the ML
+estimate for the 4-dimensional case. For the 1-dimensional case a wide range
+of $\alpha$ between $0$ and $1$ performed better. This is illustrated in
+\autoref{fig:RMS}.
 
-% TODO: Text. Here's numbers:
-% 1.2 (MAP) RMS for 4D test set:  4.60495349694
-% 1.2 (MAP) RMS for 1D test set:  4.215122148
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}[b]{.65\linewidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/prob12-sel1.png}
+    \end{minipage}
 
-\begin{figure}[h!]
-    \includegraphics[width=\textwidth]{images/prob12-sel1.png}
-\end{figure}
-\begin{figure}[h!]
-    \includegraphics[width=\textwidth]{images/prob12-sel2.png}
+    \begin{minipage}[b]{.65\linewidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/prob12-sel2.png}
+    \end{minipage}
+    \caption{The root mean square (RMS) of MAP with different $\alpha$ values
+        plotted against the RMS of the ML estimate. The 4-dimensional data set
+    is on the top, and the 1-dimensional data set is on the bottom.}
+    \label{fig:RMS}
 \end{figure}
 
 
@@ -191,6 +206,7 @@ displays the classification using $7$-NN.
 
 \begin{figure}[htbp]
     \centering
+    \includegraphics[width=\textwidth]{images/prob24-7nn.png}
     \caption{Results of using the $7$-NN classifier on the iris test set with
     the new metric. Triangles indicate training points. circles indicate
     correctly classified test points, and crosses indicate incorrectly classified
