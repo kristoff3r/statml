@@ -64,6 +64,19 @@ rmsSel2 = rms(sel2Test, sel2TestT, wMLSel2)
 print "1.1 (ML) RMS for 4D test set: ", rmsSel1
 print "1.1 (ML) RMS for 1D test set: ", rmsSel2
 
+
+# Plot prediction and data points for the 1D model
+pl.figure()
+pl.xlabel('Abdomen 2 circumference (cm)')
+pl.ylabel('Percent body fat')
+pl.plot(bfSel2[:,1], bfSel2[:,0], 'ro')
+xs = np.mgrid[60:150:100j]
+y1 = np.array([y([x],wMLSel2) for x in xs]).reshape(-1)
+p1, = pl.plot(xs,y1,'g-')
+pl.legend([p1], ["Maximum likelihood solution"])
+pl.show()
+
+
 # Question1.2 (MAP)
 def gauss(x, mu, sigma):
     return 1/(np.sqrt(2*np.pi)*sigma) * np.exp(-((x-mu)**2)/(2*sigma**2))
@@ -83,29 +96,55 @@ def MAP(Phi, t, alpha, beta=1):
     m_N = beta * np.dot(np.dot(S_N,Phi.T),t)
     return (m_N, S_N)
 
-# Maximum a posteriori weights
-m_N1, S_N1 = MAP(designSel1, sel1TrainT, 0.1)
-m_N2, S_N2 = MAP(designSel2, sel2TrainT, 0.1)
-
-# Root mean square error
-rmsSel1 = rms(sel1Test, sel1TestT, m_N1)
-rmsSel2 = rms(sel2Test, sel2TestT, m_N2)
 
 print "1.2 (MAP) RMS for 4D test set: ", rmsSel1
 print "1.2 (MAP) RMS for 1D test set: ", rmsSel2
 
+# Try different values for alpha (non-deterministic because of random selection)
+xs = np.mgrid[0:4:100j]
+ys1 = []
+ys2 = []
+for alpha in xs:
+    # Maximum a posteriori weights
+    m_N1, S_N1 = MAP(designSel1, sel1TrainT, alpha)
+    m_N2, S_N2 = MAP(designSel2, sel2TrainT, alpha)
+
+    # Root mean square error
+    rmsSel1 = rms(sel1Test, sel1TestT, m_N1)
+    rmsSel2 = rms(sel2Test, sel2TestT, m_N2)
+    ys1.append(rmsSel1)
+    ys2.append(rmsSel2)
+
+# Selection 1 (4D)
 pl.figure()
-pl.xlabel('Abdomen 2 circumference (cm)')
-pl.ylabel('Percent body fat')
-pl.plot(bfSel2[:,1], bfSel2[:,0], 'ro')
-xs = np.mgrid[60:150:100j]
-y1 = np.array([y([x],wMLSel2) for x in xs]).reshape(-1)
-y2 = np.array([y([x],m_N2) for x in xs]).reshape(-1)
-p1, = pl.plot(xs,y1,'g-')
-p2, = pl.plot(xs,y2,'b-')
-pl.legend([p1, p2], ["Maximum likelihood solution", "Maximum a posteriori solution"])
+pl.xlabel('Alpha')
+pl.ylabel('Root mean square error')
+pl.title('Selection 1')
+# Alpha values RMS
+p1, = pl.plot(xs,ys1,'ro-')
+
+# Maximum likelihood RMS
+p2, = pl.plot(xs,[rmsSel1 for x in range(len(xs))],'g-')
+
+pl.ylim([4,6])
+pl.legend([p1, p2], ["Maximum a posteriori RMS", "Maximum likelihood RMS"], loc=4)
 pl.show()
 
+# Selection 2 (1D)
+pl.figure()
+pl.xlabel('Alpha')
+pl.ylabel('Root mean square error')
+pl.title('Selection 2')
+
+# Alpha values RMS
+p1, = pl.plot(xs,ys2,'bo-')
+
+# Maximum likelihood RMS
+p2, = pl.plot(xs,[rmsSel2 for x in range(len(xs))],'y-')
+
+pl.ylim([4,6])
+pl.legend([p1, p2], ["Maximum a posteriori RMS", "Maximum likelihood RMS"], loc=4)
+pl.show()
 
 # Question 2.1
 irisTrain = np.loadtxt('data/irisTrain.dt', ndmin=2)
