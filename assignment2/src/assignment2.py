@@ -157,11 +157,14 @@ def catcolor(c):
 def cormarker(c, ec):
     if c == ec: return 'o'
     else:       return 'x'
-
+wrongcount = 0
 for p in irisTest:
     c = best_category(p[0:2].reshape(2,1), s_W_inv, m_k, prob, [0,1,2])
     pl.plot(p[0], p[1], catcolor(c) + cormarker(c, p[2]))
+    if (c != p[2]):
+        wrongcount = wrongcount + 1
 
+print "LDA failures: " + str(wrongcount)
 pl.show()
 
 # Plot means
@@ -217,3 +220,22 @@ def plot_knn(k,norm):
 
 for k in [1,3,5,7]: plot_knn(k,norm)
 for k in [1,3,5,7]: plot_knn(k,mnorm)
+
+# Question 2.5
+def morphData(D):
+    return np.ndarray((len(D), 3), buffer = np.array([[x[0], x[1]*10,x[2]] for x in D]))
+
+newTrain = morphData(irisTrain)
+m_k, s_W, prob = estimate_params(newTrain, [0,1,2])
+s_W_inv = np.linalg.inv(s_W)
+
+wrongcount = 0
+for p in morphData(irisTest):
+    c = best_category(p[0:2].reshape(2,1), s_W_inv, m_k, prob, [0,1,2])
+    pl.plot(p[0], p[1], catcolor(c) + cormarker(c, p[2]))
+    if (c != p[2]):
+        wrongcount = wrongcount + 1
+
+print "LDA failures with new norm: " + str(wrongcount)
+
+pl.show()
