@@ -58,11 +58,11 @@ def rms(x, t, w):
     return sqrt(1.0 / N * sum((t[n] - y(x[n], w))**2 for n in range(N)))
 
 # Root mean square error
-rmsSel1 = rms(sel1Test, sel1TestT, wMLSel1)
-rmsSel2 = rms(sel2Test, sel2TestT, wMLSel2)
+rmsML1 = rms(sel1Test, sel1TestT, wMLSel1)
+rmsML2 = rms(sel2Test, sel2TestT, wMLSel2)
 
-print "1.1 (ML) RMS for 4D test set: ", rmsSel1
-print "1.1 (ML) RMS for 1D test set: ", rmsSel2
+print "1.1 (ML) RMS for 4D test set: ", rmsML1
+print "1.1 (ML) RMS for 1D test set: ", rmsML2
 
 
 # Plot prediction and data points for the 1D model
@@ -97,9 +97,6 @@ def MAP(Phi, t, alpha, beta=1):
     return (m_N, S_N)
 
 
-print "1.2 (MAP) RMS for 4D test set: ", rmsSel1
-print "1.2 (MAP) RMS for 1D test set: ", rmsSel2
-
 # Try different values for alpha (non-deterministic because of random selection)
 xs = np.mgrid[0:4:100j]
 ys1 = []
@@ -124,7 +121,7 @@ pl.title('Selection 1')
 p1, = pl.plot(xs,ys1,'ro-')
 
 # Maximum likelihood RMS
-p2, = pl.plot(xs,[rmsSel1 for x in range(len(xs))],'g-')
+p2, = pl.plot(xs,[rmsML1 for x in range(len(xs))],'g-')
 
 pl.ylim([4,6])
 pl.legend([p1, p2], ["Maximum a posteriori RMS", "Maximum likelihood RMS"], loc=4)
@@ -140,7 +137,7 @@ pl.title('Selection 2')
 p1, = pl.plot(xs,ys2,'bo-')
 
 # Maximum likelihood RMS
-p2, = pl.plot(xs,[rmsSel2 for x in range(len(xs))],'y-')
+p2, = pl.plot(xs,[rmsML2 for x in range(len(xs))],'y-')
 
 pl.ylim([4,6])
 pl.legend([p1, p2], ["Maximum a posteriori RMS", "Maximum likelihood RMS"], loc=4)
@@ -162,6 +159,8 @@ def plotGroup(data, n, color):
 plotGroup(irisTrain, 0, 'yo')
 plotGroup(irisTrain, 1, 'bo')
 plotGroup(irisTrain, 2, 'ro')
+pl.xlabel('Sepal length')
+pl.ylabel('Sepal width')
 
 pl.show()
 
@@ -223,6 +222,8 @@ for p in irisTest:
         wrongcount = wrongcount + 1
 
 print "LDA failures on test: " + str(wrongcount) + ", out of " + str(len(irisTest))
+pl.xlabel('Sepal length')
+pl.ylabel('Sepal width')
 pl.show()
 
 # Plot means
@@ -232,6 +233,8 @@ plotGroup(irisTrain, 2, 'ro')
 pl.plot(m_k[0][0], m_k[0][1], 'yx')
 pl.plot(m_k[1][0], m_k[1][1], 'bx')
 pl.plot(m_k[2][0], m_k[2][1], 'rx')
+pl.xlabel('Sepal length')
+pl.ylabel('Sepal width')
 pl.show()
 
 
@@ -274,6 +277,8 @@ def plot_knn(k,norm):
     plotGroup(group, (0, False), 'yx')
     plotGroup(group, (1, False), 'bx')
     plotGroup(group, (2, False), 'rx')
+    pl.xlabel('Sepal length')
+    pl.ylabel('Sepal width')
     pl.show()
 
 for k in [1,3,5,7]: plot_knn(k,norm)
@@ -304,5 +309,7 @@ for p in morphData(irisTest):
         wrongcount = wrongcount + 1
 
 print "LDA2 failures on test: " + str(wrongcount) + ", out of " + str(len(irisTest))
+pl.xlabel('Sepal length')
+pl.ylabel('Sepal width')
 
 pl.show()
