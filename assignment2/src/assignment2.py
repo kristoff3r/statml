@@ -5,11 +5,11 @@ import Queue as q
 
 from math import sqrt, log
 
-# Question 1.1
+# Question 1.1 (ML)
 bfSel1 = np.loadtxt('data/bodyfat.txt', skiprows=117, usecols=(1,3,6,7,8), ndmin=2)
 bfSel2 = np.loadtxt('data/bodyfat.txt', skiprows=117, usecols=(1,7), ndmin=2)
-print bfSel2
 
+# Partition the data set
 def partition(inset, p=0.8):
     data = np.copy(inset)
     np.random.shuffle(data)
@@ -46,6 +46,7 @@ designSel2 = designMatrix(sel2Train)
 def w_ml(Phi, t):
     return np.dot(np.linalg.pinv(Phi), t)
 
+# Maximum likelihood weights
 wMLSel1 = w_ml(designSel1, sel1TrainT)
 wMLSel2 = w_ml(designSel2, sel2TrainT)
 
@@ -56,13 +57,14 @@ def rms(x, t, w):
     (N, _) = x.shape
     return sqrt(1.0 / N * sum((t[n] - y(x[n], w))**2 for n in range(N)))
 
+# Root mean square error
 rmsSel1 = rms(sel1Test, sel1TestT, wMLSel1)
 rmsSel2 = rms(sel2Test, sel2TestT, wMLSel2)
 
 print "1.1 (ML) RMS for 4D test set: ", rmsSel1
 print "1.1 (ML) RMS for 1D test set: ", rmsSel2
 
-# Question1.2
+# Question1.2 (MAP)
 def gauss(x, mu, sigma):
     return 1/(np.sqrt(2*np.pi)*sigma) * np.exp(-((x-mu)**2)/(2*sigma**2))
 
@@ -81,8 +83,11 @@ def MAP(Phi, t, alpha, beta=1):
     m_N = beta * np.dot(np.dot(S_N,Phi.T),t)
     return (m_N, S_N)
 
+# Maximum a posteriori weights
 m_N1, S_N1 = MAP(designSel1, sel1TrainT, 0.1)
 m_N2, S_N2 = MAP(designSel2, sel2TrainT, 0.1)
+
+# Root mean square error
 rmsSel1 = rms(sel1Test, sel1TestT, m_N1)
 rmsSel2 = rms(sel2Test, sel2TestT, m_N2)
 
@@ -98,7 +103,7 @@ y1 = np.array([y([x],wMLSel2) for x in xs]).reshape(-1)
 y2 = np.array([y([x],m_N2) for x in xs]).reshape(-1)
 p1, = pl.plot(xs,y1,'g-')
 p2, = pl.plot(xs,y2,'b-')
-pl.legend([p1, p2], ["Maximum likelihood solution", "Maximum a posteori solution"])
+pl.legend([p1, p2], ["Maximum likelihood solution", "Maximum a posteriori solution"])
 pl.show()
 
 
@@ -122,7 +127,6 @@ plotGroup(irisTrain, 2, 'ro')
 pl.show()
 
 # Question 2.1
-
 def estimate_params(data, cats):
     # Group points by category
     points = [[np.array([r[0], r[1]]).reshape(2,-1) for r in data if r[2] == n] for n in cats]
@@ -138,10 +142,12 @@ def estimate_params(data, cats):
     return (m, s_W, prob)
 
 
+
 def delta(x, k, sigma_inv, mu, prob):
     return np.dot(x.T,np.dot(sigma_inv,mu[k])) \
             - 0.5*np.dot(np.dot(mu[k].T,sigma_inv),mu[k]) + log(prob[k])
 
+# Determine best category based on LDA 
 def best_category(x, sigma_inv, mu, prob, cats):
     best_d = -1
     best_k = None
@@ -155,6 +161,7 @@ def best_category(x, sigma_inv, mu, prob, cats):
 m_k, s_W, prob = estimate_params(irisTrain, [0,1,2])
 s_W_inv = np.linalg.inv(s_W)
 
+# Get color of category
 def catcolor(c):
     return ['y','b','r'][c]
 
