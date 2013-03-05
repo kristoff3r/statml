@@ -165,7 +165,6 @@ plotGroup(irisTrain, 2, 'ro')
 
 pl.show()
 
-# Question 2.1
 def estimate_params(data, cats):
     # Group points by category
     points = [[np.array([r[0], r[1]]).reshape(2,-1) for r in data if r[2] == n] for n in cats]
