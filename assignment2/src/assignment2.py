@@ -6,8 +6,9 @@ import Queue as q
 from math import sqrt, log
 
 # Question 1.1
-bfSel1 = np.loadtxt('data/bodyfat.txt', skiprows=117, usecols=(1,4,7,8,9), ndmin=2)
-bfSel2 = np.loadtxt('data/bodyfat.txt', skiprows=117, usecols=(1,8), ndmin=2)
+bfSel1 = np.loadtxt('data/bodyfat.txt', skiprows=117, usecols=(1,3,6,7,8), ndmin=2)
+bfSel2 = np.loadtxt('data/bodyfat.txt', skiprows=117, usecols=(1,7), ndmin=2)
+print bfSel2
 
 def partition(inset, p=0.8):
     data = np.copy(inset)
@@ -58,8 +59,8 @@ def rms(x, t, w):
 rmsSel1 = rms(sel1Test, sel1TestT, wMLSel1)
 rmsSel2 = rms(sel2Test, sel2TestT, wMLSel2)
 
-print "1.1 rms1: ", rmsSel1
-print "1.1 rms2: ", rmsSel2
+print "1.1 (ML) RMS for 4D test set: ", rmsSel1
+print "1.1 (ML) RMS for 1D test set: ", rmsSel2
 
 # Question1.2
 def gauss(x, mu, sigma):
@@ -85,16 +86,19 @@ m_N2, S_N2 = MAP(designSel2, sel2TrainT, 0.1)
 rmsSel1 = rms(sel1Test, sel1TestT, m_N1)
 rmsSel2 = rms(sel2Test, sel2TestT, m_N2)
 
-print "1.2 rms1: ", rmsSel1
-print "1.2 rms2: ", rmsSel2
+print "1.2 (MAP) RMS for 4D test set: ", rmsSel1
+print "1.2 (MAP) RMS for 1D test set: ", rmsSel2
 
 pl.figure()
+pl.xlabel('Abdomen 2 circumference (cm)')
+pl.ylabel('Percent body fat')
 pl.plot(bfSel2[:,1], bfSel2[:,0], 'ro')
-xs = np.mgrid[80:150:100j]
+xs = np.mgrid[60:150:100j]
 y1 = np.array([y([x],wMLSel2) for x in xs]).reshape(-1)
 y2 = np.array([y([x],m_N2) for x in xs]).reshape(-1)
-pl.plot(xs,y1,'g-')
-pl.plot(xs,y2,'b-')
+p1, = pl.plot(xs,y1,'g-')
+p2, = pl.plot(xs,y2,'b-')
+pl.legend([p1, p2], ["Maximum likelihood solution", "Maximum a posteori solution"])
 pl.show()
 
 
