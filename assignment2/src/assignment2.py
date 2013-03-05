@@ -168,6 +168,15 @@ def catcolor(c):
 def cormarker(c, ec):
     if c == ec: return 'o'
     else:       return 'x'
+
+wrongcount = 0
+for p in irisTrain:
+    c = best_category(p[0:2].reshape(2,1), s_W_inv, m_k, prob, [0,1,2])
+    if (c != p[2]):
+        wrongcount = wrongcount + 1
+
+print "LDA failures on train: " + str(wrongcount) + ", out of " + str(len(irisTrain))
+
 wrongcount = 0
 for p in irisTest:
     c = best_category(p[0:2].reshape(2,1), s_W_inv, m_k, prob, [0,1,2])
@@ -175,7 +184,7 @@ for p in irisTest:
     if (c != p[2]):
         wrongcount = wrongcount + 1
 
-print "LDA failures: " + str(wrongcount)
+print "LDA failures on test: " + str(wrongcount) + ", out of " + str(len(irisTest))
 pl.show()
 
 # Plot means
@@ -241,12 +250,21 @@ m_k, s_W, prob = estimate_params(newTrain, [0,1,2])
 s_W_inv = np.linalg.inv(s_W)
 
 wrongcount = 0
+for p in morphData(irisTrain):
+    c = best_category(p[0:2].reshape(2,1), s_W_inv, m_k, prob, [0,1,2])
+    if (c != p[2]):
+        wrongcount = wrongcount + 1
+
+print "LDA2 failures on train: " + str(wrongcount) + ", out of " + str(len(irisTrain))
+
+pl.show()
+wrongcount = 0
 for p in morphData(irisTest):
     c = best_category(p[0:2].reshape(2,1), s_W_inv, m_k, prob, [0,1,2])
     pl.plot(p[0], p[1], catcolor(c) + cormarker(c, p[2]))
     if (c != p[2]):
         wrongcount = wrongcount + 1
 
-print "LDA failures with new norm: " + str(wrongcount)
+print "LDA2 failures on test: " + str(wrongcount) + ", out of " + str(len(irisTest))
 
 pl.show()
