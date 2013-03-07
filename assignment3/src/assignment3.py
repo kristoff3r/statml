@@ -12,11 +12,11 @@ class NeuralNetwork:
         self.dw1 = np.zeros((n,2))    # Last change in given weight
         self.dw2 = np.zeros((1,n+1))  # Last change in given weight
         self.M = n + 1 # Amount of neurons in hidden layer (incl. bias node)
-        self.D = 1     # Amount of input neurons
+        self.D = 1 + 1 # Amount of input neurons
         self.K = 1     # Amount of output neurons
-        self.learning_rate = 0.01
-        self.momentum_rate = 0.01
-        self.hidden_start = self.D + 1 # Index of first hidden layer neuron
+        self.learning_rate = 0.03
+        self.momentum_rate = 0.05
+        self.hidden_start = self.D   # Index of first hidden layer neuron
         self.output_start = self.hidden_start + self.M  # Index of first output neuron
         self.total = self.output_start + self.K # Total amount of neurons
 
@@ -30,9 +30,9 @@ class NeuralNetwork:
 
     # Run the neural network
     def run(self, x):
-        x_d = np.append(x, 1)                 # Add bias to input layer
+        x_d = np.append(x, 1)                                 # Add bias to input layer
         w_in = np.append(dot(self.w1,x_d), 1).reshape(-1,1)   # Add bias to hidden layer
-        y = dot(self.w2, np.apply_along_axis(self.h,1, w_in))        # Calculate output
+        y = dot(self.w2, np.apply_along_axis(self.h,1, w_in)) # Calculate output
         return y
 
     # Get or update weight
@@ -62,18 +62,21 @@ class NeuralNetwork:
         for row in data:
             x = row[0]
             y = row[1]
-            z = [x]
-            a = [0]
+            z = [1,x]
+            a = [0,0]
 
             # Compute node values
-            for i in range(1, self.total):
+            for i in range(2, self.total):
                 a.append(sum([z[j]*self.w(i,j) for j in range(i)]))
-                z.append(self.h(a[i]))
+                if i >= self.hidden_start and i < self.output_start:
+                    z.append(self.h(a[i]))
+                else:
+                    z.append(a[i])
 
             delta = np.zeros(self.total - self.hidden_start + 2)
             delta[self.total-1] = z[-1] - y
             for i in range(self.total-2, self.hidden_start-1, -1):
-                delta[i] = self.h_(a[i] * sum([self.w(k,i)*delta[k] for k in range(i+1, self.total)]))
+                delta[i] = self.h_(a[i]) * sum([self.w(k,i)*delta[k] for k in range(i+1, self.total)])
 
             # Update weights
             for (i, j) in product(range(len(delta)), range(len(z))):
@@ -85,8 +88,8 @@ class NeuralNetwork:
 sincTrain = np.loadtxt('data/sincMoreTrain.dt',ndmin=2)
 NN = NeuralNetwork(20)
 NN.train(sincTrain)
-print NN.w1
-print NN.w2
+#print NN.w1
+#print NN.w2
 for row in sincTrain:
     v = NN.run(np.array(row[0]))
     pl.plot(row[0],row[1],'go')
