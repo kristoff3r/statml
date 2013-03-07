@@ -41,51 +41,50 @@ class NeuralNetwork:
             return 0
         elif i < self.output_start-1 and j < self.hidden_start: # Weight to hidden layer
             if value is not None:
-                dw = value*self.learning_rate + self.momentum_rate * self.dw1[i-2,j]
-                self.w1[i-2, j] -= dw
-                self.dw1[i-2, j] = dw
+                dw = value*self.learning_rate + self.momentum_rate * self.dw1[i-self.hidden_start,j]
+                self.w1[i-self.hidden_start, j] -= dw
+                self.dw1[i-self.hidden_start, j] = dw
             else:
-                return self.w1[i-2, j]
+                return self.w1[i-self.hidden_start, j]
         elif i == self.output_start and j >= self.hidden_start and j < self.output_start: # Weight to output layer
             if value is not None:
-                dw = value*self.learning_rate + self.momentum_rate * self.dw2[0,j-2]
-                self.w2[0,j-2] -= dw
-                self.dw2[0,j-2] = dw
+                dw = value*self.learning_rate + self.momentum_rate * self.dw2[0,j-self.hidden_start]
+                self.w2[0,j-self.hidden_start] -= dw
+                self.dw2[0,j-self.hidden_start] = dw
             else:
-                return self.w2[0,j-2]
+                return self.w2[0,j-self.hidden_start]
         else: # No connection exists
             return 0
 
     def train(self, data):
         data = data.copy()
         np.random.shuffle(data)
-        for step in range(10):
-            for row in data:
-                x = row[0]
-                y = row[1]
-                z = [1,x]
-                a = [0,0]
+        for row in data:
+            x = row[0]
+            y = row[1]
+            z = [1,x]
+            a = [0,0]
 
-                # Compute node values
-                for i in range(2, self.total):
-                    a.append(sum([z[j]*self.w(i,j) for j in range(i)]))
-                    if i >= self.hidden_start and i < self.output_start:
-                        z.append(self.h(a[i]))
-                    else:
-                        z.append(a[i])
+            # Compute node values
+            for i in range(self.hidden_start, self.total):
+                a.append(sum([z[j]*self.w(i,j) for j in range(i)]))
+                if i >= self.hidden_start and i < self.output_start:
+                    z.append(self.h(a[i]))
+                else:
+                    z.append(a[i])
 
-                delta = np.zeros(self.total - self.hidden_start + 2)
-                delta[-1] = z[-1] - y
-                for i in range(self.total-2, self.hidden_start-1, -1):
-                    delta[i] = self.h_(a[i]) * sum([self.w(k,i)*delta[k] for k in range(i+1, self.total)])
+            delta = np.zeros(self.total)
+            delta[-1] = z[-1] - y
+            for i in range(self.total - self.K - 1, self.hidden_start-1, -1):
+                delta[i] = self.h_(a[i]) * sum([self.w(k,i)*delta[k] for k in range(i+1, self.total)])
 
 
-                # Update weights
-                gradient = np.zeros((len(z),len(z)))
-                for (i, j) in product(range(len(delta)), range(len(z))):
-                   gradient[i,j] = delta[i]*z[j]
-                   self.w(i,j,delta[i]*z[j])
-        #        print np.linalg.norm(gradient)
+            # Update weights
+            gradient = np.zeros((len(z),len(z)))
+            for (i, j) in product(range(len(delta)), range(len(z))):
+                gradient[i,j] = delta[i]*z[j]
+                self.w(i,j,delta[i]*z[j])
+            #print np.linalg.norm(gradient)
 
 
 
