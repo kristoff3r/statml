@@ -1,0 +1,49 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{bm}
+\usepackage[colorlinks=true]{hyperref}
+\usepackage{mathtools}
+
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\newcommand{\mbf}[1]{\bm{#1}}
+\DeclareMathOperator{\sgn}{sgn}
+
+% Only number equations that have references to them
+\mathtoolsset{showonlyrefs}
+
+\title{Assignment 3}
+\author{Sebastian Paaske Tørholm \& Kristoffer Søholm \& Søren Dahlgaard}
+
+\begin{document}
+\maketitle
+
+\section{Question 1.1}
+
+We wish to show that
+\[
+    \frac{d}{da} \frac{a}{1+|a|} = \frac{1}{(1+|a|)^2}.
+\]
+
+We have that
+
+\begin{align}
+    \frac{d}{da} \frac{a}{1+|a|} &= \frac{1 \cdot (1+|a|) - a \cdot \sgn(a)}{(1+|a|)^2} \\
+                                 &= \frac{(1 + |a|) - |a|}{(1+|a|)^2} \\
+                                 &= \frac{1}{(1+|a|)^2},
+\end{align}
+
+as desired.
+
+\begin{thebibliography}{9}
+    \bibitem{Bishop}
+        C. M. Bishop,
+        \emph{Pattern Recognition and Machine Learning},
+        Springer Verlag,
+        2006.
+\end{thebibliography}
+
+\end{document}
