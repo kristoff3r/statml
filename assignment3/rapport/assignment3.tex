@@ -10,6 +10,7 @@
 
 \usepackage{amsmath,amssymb,amsfonts,amsthm}
 \newcommand{\mbf}[1]{\bm{#1}}
+\newcommand{\mono}[1]{\texttt{#1}}
 \DeclareMathOperator{\sgn}{sgn}
 
 % Only number equations that have references to them
@@ -23,20 +24,121 @@
 
 \section{Question 1.1}
 
-We wish to show that
+We wish to show that the derivative of the activation function is given by
 \[
-    \frac{d}{da} \frac{a}{1+|a|} = \frac{1}{(1+|a|)^2}.
+    \frac{d}{da} \frac{a}{1+|a|} = \frac{1}{(1+|a|)^2}\ .
 \]
-
-We have that
-
+For $a\ge 0$ we have
+\[
+    f(a) = g(a)h(a)\ ,
+\]
+with $g(a) = a$ and $h(a) = (1+a)^{-1}$. We also have $g'(a) = 1$ and
+$h'(a) = -(1+a)^{-2}$. By the product rule we get
 \begin{align}
-    \frac{d}{da} \frac{a}{1+|a|} &= \frac{1 \cdot (1+|a|) - a \cdot \sgn(a)}{(1+|a|)^2} \\
-                                 &= \frac{(1 + |a|) - |a|}{(1+|a|)^2} \\
-                                 &= \frac{1}{(1+|a|)^2},
+    f'(a) &= g'(a)h(a) + g(a)h'(a) \\
+          &= \frac{1}{1+x} - \frac{x}{(1+x)^2} \\
+          &= \frac{1+x}{(1+x)^2} - \frac{x}{(1+x)^2}\ .
 \end{align}
-
+For $a < 0$ we instead have $h(a) = (1-a)^{-1}$. Using the same approach and
+combining the results, we arrive at
+\[
+    f'(a) =
+    \begin{cases}
+        1/(1+x)^2 & \text{if $x\ge 0$} \\
+        1/(1-x)^2 & \text{if $x < 0$}
+    \end{cases}
+\]
 as desired.
+
+We wish to use the mean-squared error (MSE) as our error function. This is
+given by
+\[
+    E(w) = \frac{1}{m} \sum_{i=1}^m (y(w, x_i) - t_i)^2\ .
+\]
+This error function is implemented in the file \mono{ffneterror.m}. We note,
+that backpropagation minimizes the sum-of-squares error function, which is
+not the same as the MSE. However, the two error functions only differ by a
+constant factor of $2/m$, so we can multiply the backpropagation result by
+this to obtain the gradient that corresponds to the MSE function. Our
+implementation of the feed-forward neural network can be seen in
+\mono{ffnet.m}, and the implementation of backwards propagation can be seen
+in \mono{backprop.m}. In \mono{assignment3.m} we compare the initial gradient
+computed with the numerical approach (\mono{numgrads.m}) and using backwards
+propagation. With $\varepsilon = 1e-6$ the difference between the two
+approaches was around $10^{-6}$, which is reasonable. Note, that we initialize
+the values of $w$ randomly according to a gaussian, so the error is not the
+same on every run.
+
+
+\section{Question 1.2}
+Training of the neural network is implemented in the function \mono{train.m}.
+It runs for a set number of iterations rather than using some stop criterium.
+The reason is that training the network is quite computational intensive, so
+we would like to be certain that it stops at some point.
+
+The trainer uses a simple steepest descent, and does not use any form of
+early-stopping or weight decay to avoid over fitting. It is clear that both of
+these could be used to avoid over-fitting. As mention in \cite{Bishop}, the
+error function w.r.t the training set decreases with the number of iteration,
+but at some point, the network will start to overfit. By measuring the error
+w.r.t a validation set as well, we are able to stop before overfitting becomes
+a problem.
+
+We used a learning rate of $\alpha = 0.3$ to produce the results below. In
+general we found that using too small learning rates made the training very
+slow, as many more iterations were needed. Using too big learning rates
+caused the optimizer to ``jump too far'', which caused some weird spikes in
+MSE for the different iterations. It could actually lead to a worsening in the
+error function. This issue could be solved by performing a line search along
+the direction of the negative gradient instead of using a fixed learning rate.
+
+\autoref{fig:func} shows the original data samples, the sinc function and
+the evaluated neural networks for the interval $[-10, 10]$. The blue line
+corresponds to the network with $2$ hidden neurons, and the green line is the
+network with $20$ hidden neurons. It is clear that both networks have problems
+with capturing the sinc function on the left, and perform slightly better
+on the right. It is quite clear, that the network with more neurons was better
+at approximating the function.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/functions.pdf}
+    \caption{The training samples, sinc function and the two neural networks
+        plotting along with each other. The blue and green curves correspond
+    to the networks with $2$ and $20$ hidden neurons respectively.}
+    \label{fig:func}
+\end{figure}
+
+\autoref{fig:error_norm} shows the MSE of the networks and the
+norm of the gradients (another common stopping criteria) per iteration. This
+figure suggests, that the learning rate we used was probably a bit too big,
+which is evident from the spiky curve of the MSE. It is very interesting to
+note the behaviour of the gradient, which seems very counter intuitive. We
+would expect the gradient to become smaller and smaller during the
+optimization like it does for the small network. This is definitely not the
+case for the big network, which is very odd. We
+have no idea as to what may be causing this. A possible fix to this behaviour
+could be to add a weight-decay term to the error function which gradient we
+compute. The size of the gradient for the big network is also a reason why we
+cannot use as big a learning rate for it as we wish to.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}[b]{\linewidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/errors.pdf}
+    \end{minipage}
+
+    \begin{minipage}[b]{\linewidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/norms.pdf}
+    \end{minipage}
+    \caption{The MSE and the norm of the gradient for the two neural networks
+        during the training. The blue line corresponds to the network with $2$
+    hidden neurons, and the green line to the one with $20$ hidden neurons.}
+    \label{fig:error_norm}
+\end{figure}
+
 
 \begin{thebibliography}{9}
     \bibitem{Bishop}
