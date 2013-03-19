@@ -13,6 +13,15 @@
 \newcommand{\mono}[1]{\texttt{#1}}
 \DeclareMathOperator{\sgn}{sgn}
 
+\newcommand*{\matminus}{%
+  \leavevmode
+  \hphantom{0}%
+  \llap{%
+    \settowidth{\dimen0 }{$0$}%
+    \resizebox{\dimen0 }{\height}{$-$}%
+  }%
+}
+
 % Only number equations that have references to them
 \mathtoolsset{showonlyrefs}
 
@@ -139,6 +148,47 @@ cannot use as big a learning rate for it as we wish to.
     \label{fig:error_norm}
 \end{figure}
 
+\section{Question 2.1}
+To normalize the data we use the affine linear mapping, which transforms each index $x_i$ to
+
+$$ f_{norm}(x_i) = \frac{x_i - \mu}{\sigma^2} $$
+
+Before the normalization we have the following values for the mean and variance of the training data:
+\begin{align}
+\mu_{train} =  (&155.9603,204.8211,115.0586,0.0059,4.2887e\matminus05,0.0032,0.0033, \\
+                &0.0096,0.0277,0.2624,0.0146,0.0166,0.0219,0.0440,0.0226, \\
+                &22.0007,0.4948,0.7156,\matminus5.7637,0.2147,2.3657,0.1997)^T
+\end{align}
+
+\begin{align}
+\sigma^2_{train} = (&1983.0443,9733.1333,2115.1571,1.5793e\matminus05,\\
+                    &9.1459e\matminus10,5.6483e\matminus06,5.2328e\matminus06, \\
+                    &5.0819e\matminus05,0.0002,0.0267,7.5632e\matminus05,0.0001, \\
+                    &0.0001,0.0006,0.0008,16.6799,0.0104,0.0031,1.0726, \\
+                    &0.0058,0.1378,0.0067)^T
+\end{align}
+
+
+The normalized training data have $\mu = 0$ and $\sigma^2 = 1$ as expected. If we apply
+the same map on the test data with the same mean and variance, we get the following mean
+and variance for the normalized test data:
+
+\begin{align} 
+\mu_{test} = (&\matminus0.0781,\matminus0.1572,0.0553,0.1126,0.0712,0.0864,0.1150,0.0865, \\
+              &0.2477,0.2439,0.2283,0.2496,0.3149,0.2284,0.1482,\matminus0.0564, \\
+              &0.0731,0.0863,0.1539,0.3091,0.0869,0.1677)^T
+\end{align}
+
+\begin{align}
+  \sigma^2_{test} = (&0.7322,0.7149,0.7976,1.9906,1.6662,2.1369,1.9224,2.1379, \\
+                     &1.7721,1.8291,1.7174,1.7780,2.1904,1.7176,2.6632,1.3610, \\
+                     &1.0827,0.9514,1.2166,1.3629,1.1336,1.4148)^T
+\end{align}
+
+
+
+\section{Question 2.2}
+\section{Question 2.3}
 
 \begin{thebibliography}{9}
     \bibitem{Bishop}
