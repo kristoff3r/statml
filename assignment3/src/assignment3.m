@@ -102,6 +102,9 @@ best_model = [0, 0, 0];
 best_model_norm = [0, 0, 0];
 bounded_count = zeros(7, 7);
 bounded_count_norm = zeros(7, 7);
+free_count = zeros(7, 7);
+free_count_norm = zeros(7, 7);
+
 for i = 1:7
     for j = 1:7
         c = cs(i);
@@ -138,11 +141,19 @@ for i = 1:7
         
         alphaIndexes = arrayfun(@(a) abs(a) > c - 0.000001, m1.Alpha);
         boundedAlphas = m1.Alpha(alphaIndexes);
+        alphaIndexes2 = arrayfun(@(a) abs(a) > 0.000001, m1.Alpha);
+        freeAlphas = m1.Alpha(alphaIndexes2);
+        
         bounded_count(i,j) = size(boundedAlphas,1);
+        free_count(i,j) = size(freeAlphas,1) - bounded_count(i,j);
         
         alphaIndexes_norm = arrayfun(@(a) abs(a) > c - 0.000001, m2.Alpha);
         boundedAlphas_norm = m2.Alpha(alphaIndexes_norm);
+        alphaIndexes2_norm = arrayfun(@(a) abs(a) > 0.000001, m2.Alpha);
+        freeAlphas_norm = m2.Alpha(alphaIndexes2_norm);
+        
         bounded_count_norm(i,j) = size(boundedAlphas_norm,1);
+        free_count_norm(i,j) = size(freeAlphas_norm,1) - bounded_count(i,j);
     end
 end
 
