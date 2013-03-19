@@ -100,6 +100,8 @@ cp_norm = classperf(labels);
 
 best_model = [0, 0, 0];
 best_model_norm = [0, 0, 0];
+bounded_count = zeros(7, 7);
+bounded_count_norm = zeros(7, 7);
 for i = 1:7
     for j = 1:7
         c = cs(i);
@@ -109,7 +111,7 @@ for i = 1:7
             test = (indices == k); train = ~test;
 
             % Raw data
-             m1 = svmtrain(data(train,:),labels(train), ...
+            m1 = svmtrain(data(train,:),labels(train), ...
                           'boxconstraint', c,  ...
                           'kernel_function', 'rbf', ...
                           'rbf_sigma', sqrt(1/(2*gamma)));
@@ -131,8 +133,15 @@ for i = 1:7
         if cp_norm.CorrectRate > best_model_norm(1)
             best_model_norm = [cp_norm.CorrectRate, c, gamma];
         end
+        
+        alphaIndexes = arrayfun(@(a) abs(a) > c - 0.000001, m1.Alpha);
+        boundedAlphas = m1.Alpha(alphaIndexes);
+        bounded_count(i,j) = size(boundedAlphas,1);
+        
+        alphaIndexes_norm = arrayfun(@(a) abs(a) > c - 0.000001, m2.Alpha);
+        boundedAlphas_norm = m2.Alpha(alphaIndexes_norm);
+        bounded_count_norm(i,j) = size(boundedAlphas_norm,1);
     end
 end
 
 %% Question 2.3
-
