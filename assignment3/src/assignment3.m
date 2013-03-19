@@ -73,7 +73,7 @@ ylabel('log(MSE)');
 
 
 
-% Question 2.1
+%% Question 2.1
 data = importdata('data/parkinsonsTrainStatML.dt');
 labels = data(:,end);
 data = data(:,1:end-1);
@@ -83,20 +83,23 @@ mean = sum(data,1) / size(data,1);
 variance = var(data,0,1);
 
 % Affine normalization map (f(x) = (x - mean) / variance)
-norm_data = bsxfun(@rdivide, bsxfun(@minus,data, mean), sqrt(variance));
-test_mean = sum(norm_data,1) / size(norm_data,1);
-test_variance = var(norm_data,0,1);
+data_norm = bsxfun(@rdivide, bsxfun(@minus,data, mean), sqrt(variance));
+test_mean = sum(data_norm,1) / size(data_norm,1);
+test_variance = var(data_norm,0,1);
 
 
-
-% Question 2.2
+%% Question 2.2
 cs = [0.01, 0.1, 1, 5, 10, 100, 1000];
 gammas = [0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1];
 
 indices = crossvalind('Kfold', size(data,1), 5);
+
+
 cp = classperf(labels);
+cp_norm = classperf(labels);
 
 best_model = [0, 0, 0];
+best_model_norm = [0, 0, 0];
 for i = 1:7
     for j = 1:7
         c = cs(i);
@@ -104,19 +107,32 @@ for i = 1:7
         kernel = @(x,z) exp(-gamma*norm(x-z)^2);
         for k = 1:5
             test = (indices == k); train = ~test;
+
             % Raw data
-            m1 = svmtrain(norm_data(train,:),labels(train), ...
+             m1 = svmtrain(data(train,:),labels(train), ...
                           'boxconstraint', c,  ...
                           'kernel_function', 'rbf', ...
                           'rbf_sigma', sqrt(1/(2*gamma)));
-            % Normalized data
-            %svmtrain('kernel_function', @kernel);
-            prediction = svmclassify(m1, norm_data(test,:));
+            prediction = svmclassify(m1, data(test,:));
             cp = classperf(cp, prediction, test);
+
+
+            % Normalized data
+            m2 = svmtrain(data_norm(train,:),labels(train), ...
+                          'boxconstraint', c,  ...
+                          'kernel_function', 'rbf', ...
+                          'rbf_sigma', sqrt(1/(2*gamma)));
+            prediction_norm = svmclassify(m2, data_norm(test,:));
+            cp_norm = classperf(cp_norm, prediction_norm, test);
         end
         if cp.CorrectRate > best_model(1)
             best_model = [cp.CorrectRate, c, gamma];
         end
-        [cp.CorrectRate, c, gamma]
+        if cp_norm.CorrectRate > best_model_norm(1)
+            best_model_norm = [cp_norm.CorrectRate, c, gamma];
+        end
     end
 end
+
+%% Question 2.3
+
